@@ -1,0 +1,292 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model UserProfile {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   // Simple simulation password hashing
+  name         String?
+  avatarUrl    String?
+  hskLevel     Int      @default(1) // HSK level target (1-6)
+  learningGoal String   @default("HSK") // HSK, HSKK, communication, reading, business
+  streak       Int      @default(0)
+  lastActive   DateTime @default(now())
+  points       Int      @default(0)
+  role         String   @default("user") // "user" or "admin"
+  subscription String   @default("free") // "free" or "pro"
+  streakFreezes Int      @default(0)
+  placementCompleted Boolean @default(false)
+  badges       String   @default("[]")   // JSON list of badges
+  dailyMissions String  @default("{}")   // JSON mission progress
+  dob          DateTime?
+  bio          String?
+  phone        String?
+  gender       String?
+  nativeLanguage String?
+  learningTimeGoal Int @default(15)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  progress         UserProgress[]
+  flashcardReviews FlashcardReview[]
+  speakingRecordings SpeakingRecording[]
+  writingSubmissions WritingSubmission[]
+  quizResults       QuizResult[]
+  transactions     PaymentTransaction[]
+}
+
+model Roadmap {
+  id          String         @id @default(uuid())
+  title       String
+  description String?
+  level       Int            // Target Level (1-6)
+  stages      RoadmapStage[]
+  createdAt   DateTime       @default(now())
+}
+
+model RoadmapStage {
+  id          String   @id @default(uuid())
+  roadmapId   String
+  roadmap     Roadmap  @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  order       Int      // Stage order (1 to 6)
+  lessons     Lesson[]
+  createdAt   DateTime @default(now())
+}
+
+model Lesson {
+  id          String       @id @default(uuid())
+  stageId     String
+  stage       RoadmapStage @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  order       Int
+  level       Int          @default(1)
+  
+  vocabularies Vocabulary[]
+  grammars     GrammarPoint[]
+  listening    ListeningLesson?
+  reading      ReadingLesson?
+  speaking     SpeakingTopic?
+  writing      WritingTask?
+  quizzes      Quiz[]
+  progress     UserProgress[]
+
+  createdAt    DateTime @default(now())
+}
+
+model Vocabulary {
+  id          String   @id @default(uuid())
+  lessonId    String?
+  lesson      Lesson?  @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  character   String   // Hanzi
+  pinyin      String
+  meaningVi   String
+  meaningEn   String?
+  exampleZh   String
+  exampleVi   String
+  hskLevel    Int      @default(1)
+  topic       String   // family, work, shopping, study, travel, business, etc.
+  audioUrl    String?
+  
+  reviews     FlashcardReview[]
+  createdAt   DateTime @default(now())
+}
+
+model GrammarPoint {
+  id            String   @id @default(uuid())
+  lessonId      String?
+  lesson        Lesson?  @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  title         String   // Structure name
+  formula       String   // Formula
+  explanationVi String   // Explanation in Vietnamese
+  example1Zh    String
+  example1Vi    String
+  example2Zh    String
+  example2Vi    String
+  example3Zh    String
+  example3Vi    String
+  quizQuestion  String?  // Inline check question
+  quizOptions   String?  // JSON options array
+  quizAnswer    String?  // Correct answer
+  createdAt     DateTime @default(now())
+}
+
+model ListeningLesson {
+  id           String   @id @default(uuid())
+  lessonId     String   @unique
+  lesson       Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title        String
+  audioUrl     String   // Simulation path
+  transcriptZh String
+  pinyin       String
+  meaningVi    String
+  questions    String   // JSON string of questions (multiple choice)
+  createdAt    DateTime @default(now())
+}
+
+model SpeakingTopic {
+  id           String              @id @default(uuid())
+  lessonId     String              @unique
+  lesson       Lesson              @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title        String
+  prompt       String              // Speaking prompt
+  sampleAnswer String?             // Sample answer in Chinese for AI comparison
+  prepTime     Int                 @default(10) // standard HSKK prep time
+  recordTime   Int                 @default(30) // standard recording time
+  recordings   SpeakingRecording[]
+  createdAt    DateTime            @default(now())
+}
+
+model ReadingLesson {
+  id            String   @id @default(uuid())
+  lessonId      String   @unique
+  lesson        Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title         String
+  contentZh     String
+  translationVi String
+  questions     String   // JSON string of questions
+  createdAt     DateTime @default(now())
+}
+
+model WritingTask {
+  id          String              @id @default(uuid())
+  lessonId    String              @unique
+  lesson      Lesson              @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title       String
+  prompt      String              // Writing prompt
+  minWords    Int                 @default(10)
+  checklist   String              // JSON checklist e.g. ["Đúng ngữ pháp", "Đủ 5 câu"]
+  submissions WritingSubmission[]
+  createdAt   DateTime            @default(now())
+}
+
+model Quiz {
+  id          String         @id @default(uuid())
+  lessonId    String?
+  lesson      Lesson?        @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  title       String
+  description String?
+  questions   QuizQuestion[]
+  results     QuizResult[]
+  createdAt   DateTime       @default(now())
+}
+
+model QuizQuestion {
+  id            String   @id @default(uuid())
+  quizId        String
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  questionText  String
+  questionType  String   // "vocabulary", "grammar", "listening", "reading"
+  options       String   // JSON array of strings
+  correctAnswer String   // Correct option index or text
+  createdAt     DateTime @default(now())
+}
+
+model QuizResult {
+  id             String      @id @default(uuid())
+  quizId         String
+  quiz           Quiz        @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  userId         String
+  userProfile    UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score          Int
+  maxScore       Int
+  answers        String      // JSON string of answers
+  recommendation String?
+  createdAt      DateTime    @default(now())
+}
+
+model UserProgress {
+  id          String      @id @default(uuid())
+  userId      String
+  userProfile UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completed   Boolean     @default(false)
+  completedAt DateTime?
+  createdAt   DateTime    @default(now())
+
+  @@unique([userId, lessonId])
+}
+
+model FlashcardReview {
+  id           String      @id @default(uuid())
+  userId       String
+  userProfile  UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabularyId String
+  vocabulary   Vocabulary  @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+  status       String      @default("not_learned") // "not_learned", "learning", "mastered"
+  interval     Int         @default(0)
+  easeFactor   Float       @default(2.5)
+  repetitions  Int         @default(0)
+  nextReview   DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([userId, vocabularyId])
+}
+
+model SpeakingRecording {
+  id              String        @id @default(uuid())
+  userId          String
+  userProfile     UserProfile   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  speakingTopicId String
+  speakingTopic   SpeakingTopic @relation(fields: [speakingTopicId], references: [id], onDelete: Cascade)
+  audioUrl        String
+  duration        Int
+  selfPronScore   Int?
+  selfToneScore   Int?
+  selfFluencyScore Int?
+  selfVocabScore   Int?
+  teacherScore    Int?
+  teacherFeedback String?
+  reviewedAt      DateTime?
+  reviewedById    String?
+  createdAt       DateTime      @default(now())
+}
+
+model WritingSubmission {
+  id                     String      @id @default(uuid())
+  userId                 String
+  userProfile            UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  writingTaskId          String
+  writingTask            WritingTask @relation(fields: [writingTaskId], references: [id], onDelete: Cascade)
+  content                String
+  isVocabularyChecked    Boolean     @default(false)
+  isGrammarChecked       Boolean     @default(false)
+  isSentenceCountChecked Boolean     @default(false)
+  teacherScore           Int?
+  teacherFeedback        String?
+  reviewedAt             DateTime?
+  reviewedById           String?
+  createdAt              DateTime    @default(now())
+}
+
+model EmailVerification {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  code      String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model PaymentTransaction {
+  id        String      @id @default(uuid())
+  userId    String
+  user      UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Int
+  code      String      @unique // e.g. NANGCAP ADMIN
+  status    String      @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+

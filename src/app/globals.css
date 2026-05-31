@@ -1,26 +1,145 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@variant dark (&:where(.dark, .dark *));
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  
+  /* Flat design: smaller radii */
+  --radius-lg: 0.5rem;   /* 8px */
+  --radius-md: 0.375rem; /* 6px */
+  --radius-sm: 0.25rem;  /* 4px */
+  
+  --animate-flip-front: flip-front 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  --animate-flip-back: flip-back 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
+  /* Be Vietnam Pro as primary font (full Vietnamese support) */
+  --font-be-vietnam: 'Be Vietnam Pro', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  /* Bold Flat Light Mode */
+  --background: 0 0% 100%;          /* Pure White */
+  --foreground: 0 0% 9%;            /* Near Black */
+  
+  --primary: 354 76% 54%;           /* #E63946 - Bold Red */
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary: 0 0% 96%;            /* Gray-100 #F3F4F6 */
+  --secondary-foreground: 0 0% 9%;
+  
+  --accent: 162 72% 44%;            /* Emerald accent */
+  --accent-foreground: 0 0% 100%;
+  
+  --muted: 0 0% 96%;                /* Gray-100 */
+  --muted-foreground: 0 0% 46%;     /* Gray-500 */
+  
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 9%;
+  
+  --border: 0 0% 90%;               /* Gray-200 */
+  --ring: 354 76% 54%;              /* Same as primary */
+}
+
+.dark {
+  /* Simplified Dark Mode: gray-950 / gray-900 */
+  --background: 0 0% 4%;            /* #0a0a0a - gray-950 */
+  --foreground: 0 0% 93%;           /* gray-100 */
+  
+  --primary: 354 76% 58%;
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary: 0 0% 11%;            /* gray-900 */
+  --secondary-foreground: 0 0% 93%;
+  
+  --accent: 162 72% 44%;
+  --accent-foreground: 0 0% 100%;
+  
+  --muted: 0 0% 11%;                /* gray-900 */
+  --muted-foreground: 0 0% 55%;     /* gray-400 */
+  
+  --card: 0 0% 9%;                  /* gray-900 */
+  --card-foreground: 0 0% 93%;
+  
+  --border: 0 0% 15%;               /* gray-800 */
+  --ring: 354 76% 58%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.02em;
+}
+
+/* Custom 3D Card Flip styles */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+/* Keyframes for smooth flipping animation */
+@keyframes flip-front {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(180deg); }
+}
+
+@keyframes flip-back {
+  0% { transform: rotateY(180deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+/* Scrollbar customizations */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.25);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.45);
 }
