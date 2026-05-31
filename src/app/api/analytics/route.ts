@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 // src/app/api/analytics/route.ts
 import { NextResponse, NextRequest } from 'next/server'
 import prisma from '@/lib/db'
