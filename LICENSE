@@ -1,0 +1,94 @@
+HANZIFLOW PROPRIETARY COMMERCIAL LICENSE
+========================================
+
+Copyright (c) 2025 Nguyen Tan Nha. All Rights Reserved.
+
+PREAMBLE
+--------
+This software, HanziFlow ("the Software"), is proprietary and confidential.
+It is made available under a paid Commercial License. By purchasing, downloading,
+or using this Software, you agree to the terms set forth in this License Agreement.
+
+1. GRANT OF LICENSE
+-------------------
+Subject to the terms and conditions of this Agreement and upon full payment of
+the applicable license fee, the Licensor grants to you ("Licensee") a limited,
+non-exclusive, non-transferable, non-sublicensable license to:
+
+  a) Install and use one (1) instance of the Software for your personal or
+     internal business purposes.
+  b) Modify the Software's source code solely for your own use in operating
+     the product you have licensed.
+
+2. RESTRICTIONS
+---------------
+Licensee shall NOT, under any circumstances:
+
+  a) REDISTRIBUTE the Software's source code, in whole or in part, to any
+     third party without prior written consent from the Licensor.
+  b) RESELL, sublicense, rent, lease, or otherwise transfer rights to the
+     Software or any derivative work thereof.
+  c) Make the Software publicly available (e.g., on GitHub, GitLab, or any
+     public code repository) without written permission from the Licensor.
+  d) Remove, alter, or obscure any proprietary notices, labels, or marks
+     on the Software.
+  e) Use the Software to create a competing product that is then offered
+     for sale or distribution.
+
+3. OWNERSHIP
+------------
+The Software is licensed, not sold. The Licensor retains all intellectual
+property rights, including copyrights, in and to the Software and all
+copies thereof. Licensee acknowledges that no title to the intellectual
+property in the Software is transferred to Licensee.
+
+4. ONE DEPLOYMENT PER LICENSE
+------------------------------
+Each license key permits one (1) production deployment. If you wish to
+deploy the Software on multiple domains or for multiple clients, you must
+purchase additional license(s).
+
+5. PERMITTED WHITE-LABELING
+----------------------------
+Licensee may rebrand the user interface (e.g., change name, logo, colors)
+for their own product, provided the terms of this License are still
+respected and the Licensor's copyright notice is preserved in the source code.
+
+6. NO WARRANTY
+--------------
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE LICENSOR
+BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OF
+THE SOFTWARE.
+
+7. SUPPORT & UPDATES
+--------------------
+The Licensor may, at their sole discretion, provide updates, patches, or
+technical support. Such support is not guaranteed unless explicitly agreed
+upon in a separate Support Agreement.
+
+8. TERMINATION
+--------------
+This License is effective until terminated. The Licensor may terminate this
+License immediately upon written notice if Licensee breaches any term of
+this Agreement. Upon termination, Licensee must destroy all copies of the
+Software in their possession.
+
+9. GOVERNING LAW
+----------------
+This Agreement shall be governed by and construed in accordance with the
+laws of the Socialist Republic of Vietnam, without regard to its conflict
+of law principles.
+
+10. CONTACT
+-----------
+For licensing inquiries, support, or to report a violation, please contact:
+
+  Author  : Nguyen Tan Nha
+  Email   : nguyentannha.dev@gmail.com
+  GitHub  : https://github.com/NguyenTanNHa
+
+---
+By using this Software, you acknowledge that you have read this Agreement,
+understand it, and agree to be bound by its terms and conditions.

@@ -11,7 +11,11 @@
 [![Prisma](https://img.shields.io/badge/Prisma-ORM-2C3E50?style=flat-square&logo=prisma)](https://prisma.io/)
 [![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?style=flat-square&logo=sqlite)](https://sqlite.org/)
 [![Gemini AI](https://img.shields.io/badge/Gemini_AI-2.5_Flash-8E44AD?style=flat-square&logo=google)](https://ai.google.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary_Commercial-red.svg?style=flat-square)](LICENSE)
+
+> **⚠️ Commercial License** — This source code is sold under a Proprietary Commercial License.
+> Redistribution, reselling, or public sharing of this source code is strictly prohibited.
+> See [LICENSE](LICENSE) for full terms. For purchasing, contact: **nguyentannha.dev@gmail.com**
 
 ---
 

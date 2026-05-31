@@ -28,8 +28,11 @@ async function main() {
 
   console.log('Existing data cleared.')
 
-  // Hash password
-  const passwordHash = await bcrypt.hash('password123', 10)
+  // Hash default demo password
+  // ⚠️  IMPORTANT (for buyers): Change this before going to production!
+  // Default credentials: student@hanziflow.com / Admin@HanziFlow2025!
+  //                      admin@hanziflow.com   / Admin@HanziFlow2025!
+  const passwordHash = await bcrypt.hash('Admin@HanziFlow2025!', 12)
 
   // 1. Create Users
   const student = await prisma.userProfile.create({
