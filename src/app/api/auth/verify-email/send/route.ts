@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       success: true,
       message: 'Mã xác thực đã được gửi! Vui lòng kiểm tra hộp thư của bạn.',
       // Return code in JSON only for local dev convenience
-      debugCode: code,
+      debugCode: process.env.NODE_ENV !== 'production' ? code : undefined,
     })
   } catch (error) {
     console.error('Send OTP error:', error)
