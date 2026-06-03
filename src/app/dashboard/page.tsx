@@ -48,20 +48,35 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // 1. Try to load cached data first for instant render (0ms loading state)
+    const cached = localStorage.getItem('hanziflow_dashboard_cache')
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached)
+        if (parsed.stats && parsed.missionsData) {
+          setStats(parsed.stats)
+          setMissionsData(parsed.missionsData)
+          setLoading(false)
+        }
+      } catch (e) {
+        console.error('Failed to parse dashboard cache:', e)
+      }
+    }
+
+    // 2. Fetch fresh data in the background (Stale-While-Revalidate)
     async function fetchDashboardData() {
       try {
-        const [statsRes, missionsRes] = await Promise.all([
-          fetch('/api/dashboard'),
-          fetch('/api/dashboard/daily-missions')
-        ])
-        
-        if (statsRes.ok) {
-          const data = await statsRes.json()
+        const res = await fetch('/api/dashboard')
+        if (res.ok) {
+          const data = await res.json()
           setStats(data)
-        }
-        if (missionsRes.ok) {
-          const data = await missionsRes.json()
-          setMissionsData(data)
+          setMissionsData(data.missionsData)
+          
+          // Save to cache for the next instant render
+          localStorage.setItem(
+            'hanziflow_dashboard_cache',
+            JSON.stringify({ stats: data, missionsData: data.missionsData })
+          )
         }
       } catch (err) {
         console.error('Error fetching dashboard statistics:', err)

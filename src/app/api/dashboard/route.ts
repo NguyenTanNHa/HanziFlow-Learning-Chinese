@@ -11,55 +11,91 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Fetch user profile
-    const user = await prisma.userProfile.findUnique({
-      where: { id: session.userId },
-      select: {
-        name: true,
-        email: true,
-        hskLevel: true,
-        learningGoal: true,
-        streak: true,
-        points: true,
-      },
-    })
+    const startOfToday = new Date()
+    startOfToday.setHours(0, 0, 0, 0)
+
+    // Parallelize independent database queries to avoid sequential query bottleneck
+    const [
+      user,
+      totalLessonsCount,
+      completedLessonsCount,
+      wordsLearned,
+      completedLessonIds,
+      vocabCountToday,
+      quizCountToday,
+      speakCountToday,
+      lessonCountToday
+    ] = await Promise.all([
+      prisma.userProfile.findUnique({
+        where: { id: session.userId },
+        select: {
+          name: true,
+          email: true,
+          hskLevel: true,
+          learningGoal: true,
+          streak: true,
+          points: true,
+          role: true,
+          subscription: true,
+        },
+      }),
+      prisma.lesson.count(),
+      prisma.userProgress.count({
+        where: {
+          userId: session.userId,
+          completed: true,
+        },
+      }),
+      prisma.flashcardReview.count({
+        where: {
+          userId: session.userId,
+          status: { in: ['learning', 'mastered'] },
+        },
+      }),
+      prisma.userProgress.findMany({
+        where: {
+          userId: session.userId,
+          completed: true,
+        },
+        select: { lessonId: true },
+      }).then(list => list.map(item => item.lessonId)),
+      prisma.flashcardReview.count({
+        where: {
+          userId: session.userId,
+          updatedAt: { gte: startOfToday },
+        },
+      }),
+      prisma.quizResult.count({
+        where: {
+          userId: session.userId,
+          createdAt: { gte: startOfToday },
+        },
+      }),
+      prisma.speakingRecording.count({
+        where: {
+          userId: session.userId,
+          createdAt: { gte: startOfToday },
+        },
+      }),
+      prisma.userProgress.count({
+        where: {
+          userId: session.userId,
+          completed: true,
+          completedAt: { gte: startOfToday },
+        },
+      })
+    ])
 
     if (!user) {
       return NextResponse.json({ error: 'User profile not found' }, { status: 404 })
     }
 
-    // Calculate total lessons vs completed lessons
-    const totalLessonsCount = await prisma.lesson.count()
-    const completedLessonsCount = await prisma.userProgress.count({
-      where: {
-        userId: session.userId,
-        completed: true,
-      },
-    })
-
     const progressPercent = totalLessonsCount > 0 
       ? Math.round((completedLessonsCount / totalLessonsCount) * 100) 
       : 0
 
-    // Count learned vocabulary (either in "learning" or "mastered" state)
-    const wordsLearned = await prisma.flashcardReview.count({
-      where: {
-        userId: session.userId,
-        status: { in: ['learning', 'mastered'] },
-      },
-    })
-
     // Suggest a lesson: find the first lesson of user's HSK level that they haven't completed
-    // If all are completed, find any uncompleted lesson, or return the last lesson.
     let suggestedLesson = null
-    const completedLessonIds = await prisma.userProgress.findMany({
-      where: {
-        userId: session.userId,
-        completed: true,
-      },
-      select: { lessonId: true },
-    }).then(list => list.map(item => item.lessonId))
-
     const nextUncompletedLesson = await prisma.lesson.findFirst({
       where: {
         level: user.hskLevel,
@@ -129,6 +165,19 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // Process daily missions data (same calculation as daily-missions endpoint)
+    const points = user.points
+    const level = Math.floor(points / 100) + 1
+    const xpInLevel = points % 100
+    const nextLevelXp = 100
+
+    const missions = [
+      { id: 'vocab', name: 'Học 10 từ mới', current: vocabCountToday, target: 10, completed: vocabCountToday >= 10 },
+      { id: 'quiz', name: 'Hoàn thành 1 bài kiểm tra', current: quizCountToday, target: 1, completed: quizCountToday >= 1 },
+      { id: 'speak', name: 'Luyện nói HSKK 1 câu', current: speakCountToday, target: 1, completed: speakCountToday >= 1 },
+      { id: 'lesson', name: 'Học 1 bài học mới', current: lessonCountToday, target: 1, completed: lessonCountToday >= 1 },
+    ]
+
     return NextResponse.json({
       user,
       progressPercent,
@@ -136,6 +185,15 @@ export async function GET(req: NextRequest) {
       totalLessons: totalLessonsCount,
       wordsLearned,
       suggestedLesson,
+      missionsData: {
+        success: true,
+        missions,
+        streak: user.streak,
+        points: user.points,
+        level,
+        xpInLevel,
+        nextLevelXp,
+      }
     })
   } catch (error) {
     console.error('API Dashboard error:', error)
