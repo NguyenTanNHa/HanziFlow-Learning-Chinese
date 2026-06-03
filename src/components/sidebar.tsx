@@ -26,7 +26,9 @@ import {
   Sun,
   Moon,
   Heart,
-  ChevronRight
+  ChevronRight,
+  Languages,
+  Image
 } from 'lucide-react'
 
 interface UserSession {
@@ -111,7 +113,9 @@ export default function Sidebar() {
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Lộ trình học', href: '/roadmap', icon: Map },
+    { name: 'Bảng chữ cái Pinyin', href: '/pinyin', icon: Languages },
     { name: 'Từ vựng (Flashcard)', href: '/vocabulary', icon: Bookmark },
+    { name: 'Từ điển Hình ảnh', href: '/visual-dictionary', icon: Image },
     { name: 'Ngữ pháp', href: '/grammar', icon: FileText },
     { name: 'Trợ lý học tập AI', href: '/ai-assistant', icon: Brain },
     { name: 'Kỹ năng Nghe', href: '/listening', icon: Headphones },
