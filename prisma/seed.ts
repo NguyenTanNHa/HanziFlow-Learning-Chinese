@@ -49,6 +49,20 @@ async function main() {
     },
   })
 
+  const testUser = await prisma.userProfile.create({
+    data: {
+      email: 'testuser@hanziflow.com',
+      passwordHash,
+      name: 'Test User',
+      hskLevel: 1,
+      learningGoal: 'communication',
+      streak: 1,
+      points: 10,
+      role: 'user',
+      placementCompleted: true,
+    },
+  })
+
   const admin = await prisma.userProfile.create({
     data: {
       email: 'admin@hanziflow.com',
