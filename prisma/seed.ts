@@ -76,6 +76,33 @@ async function main() {
     },
   })
 
+  // 1.1 Create additional student accounts for demo
+  const demoStudentData = [
+    { email: 'student1@hanziflow.com', name: 'Student Demo 1' },
+    { email: 'student2@hanziflow.com', name: 'Student Demo 2' },
+    { email: 'student3@hanziflow.com', name: 'Student Demo 3' },
+    { email: 'student4@hanziflow.com', name: 'Student Demo 4' },
+    { email: 'student5@hanziflow.com', name: 'Student Demo 5' },
+  ]
+
+  const demoStudents: any[] = []
+  for (const ds of demoStudentData) {
+    const du = await prisma.userProfile.create({
+      data: {
+        email: ds.email,
+        passwordHash,
+        name: ds.name,
+        hskLevel: 1,
+        learningGoal: 'communication',
+        streak: 3,
+        points: 50,
+        role: 'user',
+        placementCompleted: true,
+      },
+    })
+    demoStudents.push(du)
+  }
+
   console.log('Seeded users.')
 
   // 2. Create Roadmaps
@@ -1585,6 +1612,32 @@ async function main() {
         nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
     })
+  }
+
+  // Seed progress and flashcards for demo students
+  for (const ds of demoStudents) {
+    await prisma.userProgress.create({
+      data: {
+        userId: ds.id,
+        lessonId: lesson1.id,
+        completed: true,
+        completedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      },
+    })
+
+    for (const sv of studentVocabs) {
+      await prisma.flashcardReview.create({
+        data: {
+          userId: ds.id,
+          vocabularyId: sv.id,
+          status: 'learning',
+          interval: 1,
+          easeFactor: 2.5,
+          repetitions: 1,
+          nextReview: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        },
+      })
+    }
   }
 
   console.log('Database seeding successfully finished!')
